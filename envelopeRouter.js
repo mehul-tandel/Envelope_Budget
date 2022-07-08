@@ -3,7 +3,7 @@ const express = require('express');
 const envRouter = express.Router();
 
 // envelopes(list) store objects such as {name: envelopeName, budget: amount}
-envelopes = []
+let envelopes = []
 
 // create a new envelope from query string
 envRouter.post('/create', (req,res) => {
@@ -24,26 +24,6 @@ envRouter.post('/create', (req,res) => {
     }
 });
 
-// updates the budget of an envelope
-envRouter.post('/update', (req,res) => {
-    const name = req.query.name;
-    const budget = req.query.budget;
-    let flag = false;
-    envelopes.forEach(obj => {
-        if (obj.name === name){
-            flag = true;
-            this.delete;
-        }
-    });
-    if(flag === false){
-        res.status(404).send(`${name} envelope does not exists.`);
-    } else {
-        const obj = {name: name, budget: budget};
-        envelopes.push(obj);
-        res.send(`${name} envelope updated.`);
-    }
-});
-
 // get remaining amount from an envelope
 envRouter.get("/:name", (req, res) => {
     const name = req.params.name;
@@ -57,6 +37,19 @@ envRouter.get("/:name", (req, res) => {
         res.send(`No such envelope exists`);
     }else{
         res.send(`${amount} amount remaining.`);
+    }
+});
+
+envRouter.delete('/delete/:name', (req,res) => {
+    const name = req.params.name;
+    let new_envelopes = envelopes.filter(item => {
+        return item.name !== name;
+    });
+    if(envelopes.length === new_envelopes.length){
+        res.status(404).send(`${name} envelope does not exist.`);
+    } else {
+        envelopes = new_envelopes;
+        res.send(`${name} envelope deleted.`);
     }
 });
 
