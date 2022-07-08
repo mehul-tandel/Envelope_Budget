@@ -60,6 +60,35 @@ envRouter.get("/:name", (req, res) => {
     }
 });
 
+// endpoint to take some amount out of envelope and updates remaining amount
+envRouter.put("/:name/:amount", (req, res) => {
+    const name = req.params.name;
+    const amount = req.params.amount;
+    let exceed = false;
+    let exist = false;
+    let remaining = -1;
+    envelopes.forEach(obj => {
+        if (obj.name === name) {
+            remaining = Number(obj.budget) - Number(amount);
+            if(remaining < 0) {
+                exceed = true;
+            }else{
+                obj.budget = remaining;
+            }
+            exist = true;
+        }
+    });
+    if (!exist) {
+        res.send(`No such envelope exists`);
+    }else{
+        if(exceed){
+            res.send(`Amount exceeds the budget!`)
+        } else{
+            res.send(`${remaining} amount remaining.`);
+        }
+    }
+});
+
 // get the list of all envelopes
 envRouter.get("/", (req, res) => {
     return res.send(envelopes);
