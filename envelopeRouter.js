@@ -40,6 +40,7 @@ envRouter.get("/:name", (req, res) => {
     }
 });
 
+// endpoint to delete an envelope
 envRouter.delete('/delete/:name', (req,res) => {
     const name = req.params.name;
     let new_envelopes = envelopes.filter(item => {
@@ -80,6 +81,42 @@ envRouter.put("/:name/:amount", (req, res) => {
             res.send(`${remaining} amount remaining.`);
         }
     }
+});
+
+// endpoint to transer budget from one envelope to another
+envRouter.put('/transfer/:from/:to/:amount', (req,res) => {
+    const from = req.params.from;
+    const to = req.params.to;
+    const amount = req.params.amount;
+    let exceed = false;
+    let exist = 0;
+    envelopes.forEach(envelope => {
+        if (envelope.name === from){
+            let remaining = Number(envelope.budget) - Number(amount);
+            if (remaining < 0){
+                exceed = true;
+            }else{
+                envelope.budget = remaining;
+                exist = 1;
+            }
+        }
+    });
+    if (exceed){
+        res.send(`Amount exceeds the budget of ${from} envelope.`);
+    }
+    else if (exist === 1) {
+        envelopes.forEach(envelope => {
+            if (envelope.name === to){
+                envelope.budget += Number(amount);
+                exist = 2;
+            }
+        });
+    }else if (exist === 2) {
+        res.send(`Transfer Successful!`);
+    }else{
+        res.send('Invalid envelope name.');
+    }
+    
 });
 
 // get the list of all envelopes

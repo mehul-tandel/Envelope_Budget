@@ -9,7 +9,7 @@ app = express();
 app.use("/envelopes",envRouter);
 
 app.get("/", (req,res) => {
-    res.send("Hello World!");
+    res.send("Envelope Budgeting!");
 });
 
 app.listen(port, () => {
